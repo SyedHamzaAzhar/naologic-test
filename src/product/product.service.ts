@@ -55,10 +55,8 @@ export class ProductService {
       const enhancedDescription = await generateFunctionWithLanguage({
         language: 'en', 
         task: `Product name: ${product.productName}\nProduct description: ${product.productDescription}:`,
-      });
-      console.log({enhancedDescription});
-      
-      product.enhancedDescription = enhancedDescription.code; // Assuming the result is in `enhancedDescription.code`
+      });      
+      product.enhancedDescription = enhancedDescription.code; 
       await this.productModel.updateOne({ _id: product._id }, { enhancedDescription: product.enhancedDescription });
     }
   }
