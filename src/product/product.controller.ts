@@ -1,12 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { ProductService } from './product.service';
 
-@Controller('product')
-export class ProductController {
-  constructor(private readonly productService: ProductService) { }
-  
-  @Get()
-  readCsvStream() {
-    return this.productService.readCsvStream();
+@Injectable()
+export class ProductCronService {
+    private readonly logger = new Logger(ProductCronService.name);
+
+  constructor(private readonly productService: ProductService) {}
+
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  handleCron() {
+     this.logger.debug('Cron job started');
+    this.productService.readCsvStream();
   }
 }

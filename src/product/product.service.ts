@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as fs from 'fs';
 import { Model } from 'mongoose';
@@ -9,7 +9,8 @@ const csvToJson = require('csvtojson');
 
 @Injectable()
 export class ProductService {
-    
+        private readonly logger = new Logger();
+
     constructor(
     @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
   ) {}
@@ -19,7 +20,7 @@ export class ProductService {
     try {
       const csvRead = () => fs.createReadStream('./file/images40.csv');
      const allData: any[] = [];
-            const seenProductIds = new Set();
+    const seenProductIds = new Set();
 
       csvRead()
         .pipe(csvToJson({
@@ -40,6 +41,8 @@ export class ProductService {
         .on('end', async () => {
           await this.productModel.insertMany(allData);
           console.log('CSV file successfully processed');
+              this.logger.debug('Cron job finished');
+
           await this.enhanceDescriptions(allData.slice(0, 10));
         });
     } catch (error) {
